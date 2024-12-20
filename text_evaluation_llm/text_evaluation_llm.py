@@ -29,13 +29,14 @@ def llm_inference(user_sample):
                                             "3. The number of verbs in the text. Do not write verbs\n"
                                             "4. The number of adverbs in the text. Do not write adverbs\n"
                                             "5. The number of pronouns in the text. Do not write pronouns\n"
-                                            "6. Text descriptivity: the number of adjectives divide to the whole number of all words in the text\n"
-                                            "7. Text nominativity: the number of nouns divide to the whole number of all words in the text\n"
+                                            "7. The number of numerals in the text. Do not write numerals\n"
+                                            "8. Text descriptivity: the number of adjectives divide to the whole number of all words in the text\n"
+                                            "9. Text nominativity: the number of nouns divide to the whole number of all words in the text\n"
                                             "Lexical level:\n"
-                                            "1. The number of A1, A2, B1, B2, C1, C2 words in the text\n"
-                                            "2. The average number of A1, A2, B1, B2, C1, C2 words in the sentences\n"
-                                            "3. The number of A1, A2, B1, B2, C1, C2 collocations in the text\n"
-                                            "4. The average number of A1, A2, B1, B2, C1, C2 collocations in the sentences\n"
+                                            "1. The number of A1, A2, B1, B2, C1 words in the text\n"
+                                            "2. The average number of A1, A2, B1, B2, C1 words in the sentences\n"
+                                            "3. The number of A1, A2, B1, B2, C1 collocations in the text\n"
+                                            "4. The average number of A1, A2, B1, B2, C1 collocations in the sentences\n"
                                             "5. Type token ratio (TTR): TTR = (N / total words)\n"
                                             "where N - the number of all unique words in the text\n"
                                             "total words - the number of all words in the text.\n" 
@@ -52,6 +53,7 @@ def llm_inference(user_sample):
                                             "4. SMOG (Simple Measure of Gobbledygook)\n"
                                             "Write all metrics and a text level according to CEFR (A1, A2, B1, B2, C1, C2) based on these metrics\n"
                                             "If it is a text on another language, say that you could not evaluate it\n"
+                                            "Extract named entities (personal names, toponyms, organizations) and write them seperately\n"
                                             "Present the result in a json format"}],
           stream=False,
           max_tokens=1000,

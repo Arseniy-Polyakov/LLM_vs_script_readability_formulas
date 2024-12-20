@@ -11,6 +11,7 @@ logging.critical("A message of CRITICAL severity")
 import nltk
 from nltk.stem import WordNetLemmatizer 
 lemmatizer = WordNetLemmatizer()
+
 with open("text_evaluation_script/input_text.txt", "rt", encoding="utf-8") as file:
     input_text = file.read()
 
@@ -21,6 +22,11 @@ logging.info(text_preprocessed)
 text_tokenized = nltk.word_tokenize(text_preprocessed)
 text_lemmatized = [lemmatizer.lemmatize(token) for token in text_tokenized]
 logging.info(" TEXT LEMMATIZED " + str(text_lemmatized))
+
+#NER 
+pos_tags = nltk.pos_tag(text_lemmatized)
+entities = [token for token in pos_tags if token[1] == "NNP" or token[1] == "NNPS"]
+logging.info(" ENTITIES " + str(entities))
 
 #GENERAL STATISTICS
 sentences = nltk.sent_tokenize(input_text)
@@ -109,6 +115,8 @@ data_phonological = {"Syllables": syllables_count,
                      "3-syllables per sentence": three_syllables_average, 
                      "4-syllables per sentence": four_syllables_average, 
                      "5 and more syllables per sentence": five_and_more_syllables_average}
+
+polysyllabic = syllables["3-syllables"] + syllables["4-syllables"] + syllables["5 and more syllables"]
 logging.info(" II. PHONOLOGICAL LEVEL " + str(data_phonological))
 
 #GRAMMATICAL LEVEL
@@ -124,7 +132,7 @@ data_grammatical = {"Nouns": 0,
                     "Functional parts of speech": 0, 
                     "Nominativity": 0, 
                     "Descriptivity": 0}
-functional_pos = []
+
 for tag in pos_tagging:
     if tag[1] == "NOUN":
         data_grammatical["Nouns"] += 1
@@ -150,36 +158,103 @@ logging.info(" III. GRAMMATICAL LEVEL. DATA " + str(data_grammatical))
 with open("text_evaluation_script/words.json", "rt", encoding="utf-8") as file:
     lexis_words = json.load(file)
 
-with open("text_evaluation_script/collocations/A1_collocations.txt", "rt", encoding="utf-8") as file:
-    file = file.readlines()
-
-logging.info(" READLINE " + str(file))
-
-
-# with open("text_evaluation_script/collocations.json", "rt", encoding="utf-8") as file:
-#     lexis_collocations = json.load(file)
+with open("text_evaluation_script/collocations.json", "rt", encoding="utf-8") as file:
+    lexis_collocations = json.load(file)
 
 data_lexical = {"A1 words in the text": 0, 
                 "A2 words in the text": 0, 
                 "B1 words in the text": 0, 
                 "B2 words in the text": 0, 
-                "C1 words in the text": 0, 
-                "A1 per sentence": 0, 
-                "A2 per sentence": 0,
-                "B1 per sentence": 0,
-                "B2 per sentence": 0,
-                "C1 per sentence": 0}
+                "C1 words in the text": 0,
+                "Named Entities in the text": 0,  
+                "A1 words per sentence": 0, 
+                "A2 words per sentence": 0,
+                "B1 words per sentence": 0,
+                "B2 words per sentence": 0,
+                "C1 words per sentence": 0, 
+                "Named Entities per sentence": 0,
+                "A1 collocations in the text": 0, 
+                "A2 collocations in the text": 0, 
+                "B1 collocations in the text": 0, 
+                "B2 collocations in the text": 0, 
+                "C1 collocations in the text": 0, 
+                "A1 collocations per sentence": 0, 
+                "A2 collocations per sentence": 0,
+                "B1 collocations per sentence": 0,
+                "B2 collocations per sentence": 0,
+                "C1 collocations per sentence": 0, 
+                "TTR (Type Token Ratio)": 0, 
+                "RTTR (Root Type Token Ratio)": 0, 
+                "CTTR (Corrected Type Token Ratio)": 0,}
 
 data_lexical["A1 words in the text"] += len([word for word in lexis_words.items() if word[0] in words_without_stopwords and word[1] == "A1"])
 data_lexical["A2 words in the text"] += len([word for word in lexis_words.items() if word[0] in words_without_stopwords and word[1] == "A2"])
 data_lexical["B1 words in the text"] += len([word for word in lexis_words.items() if word[0] in words_without_stopwords and word[1] == "B1"])
 data_lexical["B2 words in the text"] += len([word for word in lexis_words.items() if word[0] in words_without_stopwords and word[1] == "B2"])
 data_lexical["C1 words in the text"] += len([word for word in lexis_words.items() if word[0] in words_without_stopwords and word[1] == "C1"])
+data_lexical["Named Entities in the text"] += len(entities)
 
-data_lexical["A1 per sentence"] += round(data_lexical["A1 words in the text"] / sentences_count, 2)
-data_lexical["A2 per sentence"] += round(data_lexical["A2 words in the text"] / sentences_count, 2)
-data_lexical["B1 per sentence"] += round(data_lexical["B1 words in the text"] / sentences_count, 2)
-data_lexical["B2 per sentence"] += round(data_lexical["B2 words in the text"] / sentences_count, 2)
-data_lexical["C1 per sentence"] += round(data_lexical["C1 words in the text"] / sentences_count, 2)
+data_lexical["A1 words per sentence"] += round(data_lexical["A1 words in the text"] / sentences_count, 2)
+data_lexical["A2 words per sentence"] += round(data_lexical["A2 words in the text"] / sentences_count, 2)
+data_lexical["B1 words per sentence"] += round(data_lexical["B1 words in the text"] / sentences_count, 2)
+data_lexical["B2 words per sentence"] += round(data_lexical["B2 words in the text"] / sentences_count, 2)
+data_lexical["C1 words per sentence"] += round(data_lexical["C1 words in the text"] / sentences_count, 2)
+data_lexical["Named Entities per sentence"] += round(len(entities) / sentences_count, 2)
 
-logging.info(" IV LEXICAL LEVEL " + str(data_lexical))
+data_lexical["A1 collocations in the text"] += len([word for word in lexis_collocations.items() if word[0] in text_preprocessed and word[1] == "A1"])
+data_lexical["A2 collocations in the text"] += len([word for word in lexis_collocations.items() if word[0] in text_preprocessed and word[1] == "A2"])
+data_lexical["B1 collocations in the text"] += len([word for word in lexis_collocations.items() if word[0] in text_preprocessed and word[1] == "B1"])
+data_lexical["B2 collocations in the text"] += len([word for word in lexis_collocations.items() if word[0] in text_preprocessed and word[1] == "B2"])
+data_lexical["C1 collocations in the text"] += len([word for word in lexis_collocations.items() if word[0] in text_preprocessed and word[1] == "C1"])
+
+data_lexical["A1 collocations per sentence"] += round(data_lexical["A1 collocations in the text"] / sentences_count, 2)
+data_lexical["A2 collocations per sentence"] += round(data_lexical["A2 collocations in the text"] / sentences_count, 2)
+data_lexical["B1 collocations per sentence"] += round(data_lexical["B1 collocations in the text"] / sentences_count, 2)
+data_lexical["B2 collocations per sentence"] += round(data_lexical["B2 collocations in the text"] / sentences_count, 2)
+data_lexical["C1 collocations per sentence"] += round(data_lexical["C1 collocations in the text"] / sentences_count, 2)
+
+data_lexical["TTR (Type Token Ratio)"] += round(len(set(text_preprocessed)) / words_count, 2)
+data_lexical["RTTR (Root Type Token Ratio)"] += round(len(set(text_preprocessed)) / (words_count ** 0.5), 2)
+data_lexical["CTTR (Corrected Type Token Ratio)"] += round(len(set(text_preprocessed)) / ((2 * words_count) ** 0.5), 2)
+
+logging.info(" IV. LEXICAL LEVEL " + str(data_lexical))
+
+#STATISTICAL METRICS
+data_statistical = {"Flesh Reading Ease (FRE)": round(206.835 - (1.015 * (words_count / sentences_count)) - (84.6 * (syllables_count / words_count)), 2), 
+                    "Flesh Kincaid Grade Level (FKGL)": round((0.39 * (words_count / sentences_count)) + (11.8 * (syllables_count / words_count)) - 15.59, 2),
+                    "LIX": round((words_count / sentences_count) + (polysyllabic * 100 / words_count), 2), 
+                    "SMOG": round(3 + (polysyllabic ** 0.5), 2)}
+
+logging.info(" V. STATISTICAL METRICS " + str(data_statistical))
+
+with open("text_evaluation_script/topics.json", "rt", encoding="utf-8") as file:
+    topics = json.load(file)
+
+topics_count = {"animals": 0, 
+                "appearance": 0, 
+                "communication": 0, 
+                "culture": 0, 
+                "food_and_drink": 0, 
+                "functions": 0, 
+                "health": 0, 
+                "homes_and_buildings": 0, 
+                "leisure": 0, 
+                "notions": 0, 
+                "people": 0, 
+                "politics_and_society": 0, 
+                "science_and_technology": 0, 
+                "sports": 0, 
+                "the_natural_world": 0, 
+                "time_and_space": 0, 
+                "travel": 0,
+                "work_and_business": 0}
+
+for token in topics.items():
+    if token[0] in text_lemmatized:
+        topics_count[topics[token[0]]] += 1
+
+topics_count = dict(sorted(topics_count.items(), key = lambda x: x[1], reverse=True)[:5]) 
+the_most_popular_topics = list(topics_count.keys())
+
+logging.info(" TOPIC MODELING " + str(topics_count))
+logging.info(" TOP 5 THE MOST COMMON TOPICS " + str(the_most_popular_topics))
