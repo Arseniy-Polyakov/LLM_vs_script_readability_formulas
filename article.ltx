@@ -1,0 +1,53 @@
+Automatic English Texts Evaluation
+Key Words: English, Text Complexity, CEFR, Quantitative Metrics, Hugging Face API, LLM, Prompt-engineering, chain-of-thought,
+Traditional and generative approaches, NER, Topic Modeling, Preprocessing, Linguistic layers, Telegram bots
+
+Introduction
+English text evaluation is a widespead task in linguistic didactics, methodology and computational linguistics fields. 
+The appropriate level of a text helps in useful lessons and exams' building and modeling. The Common European Framework of References (CEFR)
+provides a unuversal gradation of English texts levels (from A1 - the easiest to the C2 - proficient). 
+This metric system is used all over the world in international exams, tasks, texts and books adaptation and evaluation systems which helps to mark students' works. 
+However, there is no particular methodology of evalution English texts and finding the appropiate and accurate complexity level.
+
+Literature Review
+Howadays, there are several quantitative metrics which are used to evaluate the English text. 
+For instance: 
+    - Flesch Reading Ease (FRE) which has a range from 0 to 100 (where 0 is the metric of the easiest text and 100 of the hardest)
+    Formula <add formula> 
+    - Flesch-kincaid Grade Level (FKGL) which had a range from <add a range and an explanantion> 
+    Formula <add formula>
+    - <add full name> (LIX) which has a range from <add a range and an explanation>
+    - (Simple Measure Of Goodylebook) SMOG which has a range <add a range and an explanation> 
+There are other quantitave metrics like <add other metrics>, however, we will analyse only the four above because they are the most widely used in a text evaluation.
+
+Traditional and Generative Approaches
+There are two approaches in english text evaluation which are compared in the article: traditional (by using scripts in Python)
+and generative (by prompt-engineering). It will be a comparative analysis of two approaches based on such components as: program time, 
+a final result (at first a text level according to CEFR), full output data and its accuracy. 
+
+Training Sample
+There is a training sample which consists of 10 marked English texts (two texts for each level from A1 to C1).
+The texts are borrowed from this site <add a link>
+
+Methodology. Traditional (Script) Approach
+The first and foremost is the text preposessing. It contains several basic steps: segmentation (sentence division),
+tokenization (division by tokens, in this particular case nomional and functional parts of speech), 
+avoiding punctuation marks and stopwords (the words which have their grammatical bit not lexical meaning only,
+in the majority of cases there are functional parts of speech), lemmatization (making the normal form of notional verbs), 
+NER (Named Entity Recognition, extracting ononyms and toponyms from the text). 
+
+Sengenational and tokenitation are provided by the NLTK Python library, 
+stopwords are deleted by the list comprehension comparison based on generated list of stopwords by LLM (GPT 4o mini),
+lemmatization and NER arte also done with NLTK. 
+
+General metrics about the whole number of sentences and words (with stopwords and without it), the its average numbers in the sentences are made by
+counting the length of data structures. In the aspect of phonological mertics the function of automatic syllables counting is done 
+(the algorithm is to count all vowel letters which are syllable-building and exctract digrafs and trigrafs which make only one sound and, therefore, one syllable). 
+Grammatical metrics are made by POS-tagging (Part of Speech Tagging) by NLTK inner function. According to the POS gradation 
+text nominativity and descriptivity are counted and the number of nominational parts of speech (nouns, verbs, adjective, adverbs, pronouns and numerals)
+are found. 
+Lexical level is based on CEFR gradation of words and collocations (from A1 to C1 levels). The data is based on The Oxford 5000 dataset (the dataset of the most common 
+English words which are tagged from A1 to C1)
+
+
+

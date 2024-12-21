@@ -1,3 +1,4 @@
+import timeit
 from huggingface_hub import InferenceClient
 
 model_name = "Qwen/Qwen2.5-72B-Instruct"
@@ -61,5 +62,7 @@ def llm_inference(user_sample):
           )
     return output.choices[0].get('message')['content']
 
-text = input("Write your text here...")
+with open("text_evaluation_script/input_text.txt", "rt", encoding="utf-8") as file:
+    text = file.read()
 print(llm_inference(text))
+print("TIME LLM: " + str(timeit.timeit()))

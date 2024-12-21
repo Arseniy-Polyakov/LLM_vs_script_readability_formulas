@@ -1,4 +1,5 @@
 import re
+import timeit
 import logging
 import json
 logging.basicConfig(level=logging.INFO, filename="text_evaluation_script/logging.log", filemode="w")
@@ -253,8 +254,11 @@ for token in topics.items():
     if token[0] in text_lemmatized:
         topics_count[topics[token[0]]] += 1
 
+#TOPIC MODELING
 topics_count = dict(sorted(topics_count.items(), key = lambda x: x[1], reverse=True)[:5]) 
 the_most_popular_topics = list(topics_count.keys())
 
 logging.info(" TOPIC MODELING " + str(topics_count))
 logging.info(" TOP 5 THE MOST COMMON TOPICS " + str(the_most_popular_topics))
+
+logging.info(" TIME SCRIPT: " + str(timeit.timeit()) + " SEC ")
