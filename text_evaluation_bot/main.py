@@ -10,7 +10,7 @@ from tika import parser
 # from pydub import AudioSegment
 # import whisper
 
-from llm_inference import llm_inference
+from llm_inference import llm_inference, chat_llm
 
 TOKEN = "7449370256:AAFmTEcRnkkLwmNbs-9ZgKyHtXNUIMzSoww"
 bot = telebot.TeleBot(TOKEN, parse_mode=None)
@@ -45,6 +45,11 @@ analysing_answer = "Analysing your answer..."
 def send_welcome(message):
     bot.reply_to(message, hello_answer)
 
+#CHATTING
+@bot.message_handler(func = lambda message: True)
+def chatting(message):
+    bot.reply_to(message, chat_llm(message))
+
 #PARSING TEXT FILES (.PDF .DOC .DOCX .TXT)
 @bot.message_handler(content_types=["document"])
 def parsing_document(message):
@@ -75,10 +80,10 @@ def parsing_document(message):
         os.remove(file_path)
 
 #PARSING TEXT MESSAGES 
-@bot.message_handler(content_types=["text"])
-def parsing_text(message):
-    bot.reply_to(message, waiting_answer_text)   
-    bot.reply_to(message, llm_inference(message))  
+# @bot.message_handler(content_types=["text"])
+# def parsing_text(message):
+#     bot.reply_to(message, waiting_answer_text)   
+#     bot.reply_to(message, llm_inference(message))  
 
 #PARSING VOICE MESSAGES
 # @bot.message_handler(content_types=["voice"])
@@ -107,7 +112,7 @@ def parsing_text(message):
 #     bot.reply_to(message, llm_inference(transcription_text))
 
 #PARSING VIDEO MESSAGES
-@bot.message_handler(content_types=["video"])
+# @bot.message_handler(content_types=["video"])
 # def parsing_video(message):
 #     file_id = message.video.file_id
 #     file_info = bot.get_file(file_id)

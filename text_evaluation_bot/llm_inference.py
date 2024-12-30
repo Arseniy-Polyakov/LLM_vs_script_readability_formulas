@@ -29,3 +29,48 @@ def llm_inference(message):
     temperature=0.5)
     text_complexity = output.choices[0].get('message')['content']
     return text_complexity
+
+# def chat_llm(message): 
+#     model_name = "Qwen/Qwen2.5-72B-Instruct"
+#     client = InferenceClient(model_name, token="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")
+#     output = client.chat.completions.create(
+#     messages=[
+#         {"role": "system", "content": "You are an English teacher.\n"
+#                                     "context: <You need to chat with a student on the topic of the weather.\n"
+#                                     "You should chat in English, on the extremely easy level (A1 according to CEFR)\n"
+#                                     "If a student makes a mistake, you need to correct it and write in the chat before the next step in your dialogue\n"
+#                                     "If a student says something on the other topic except the weather, say that you need to discuss the weather only\n"
+#                                     "If a student write something in the other language, say that you cannot understand this language and write that a student needs to write in English>\n"
+#                                     f"[INST] Using this information <context> answer the question {message}\n"
+#                                     f"User: {message}\n"
+#                                     "Assistant:\n"
+#                                     "[/INST]"}],
+#     stream=False,
+#     max_tokens=650,
+#     temperature=0.6)
+#     chat_answer = output.choices[0].get('message')['content']
+#     return chat_answer
+
+def chat_llm(message): 
+    model_name = "Qwen/Qwen2.5-72B-Instruct"
+    client = InferenceClient(model_name, token="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")
+    output = client.chat.completions.create(
+    messages=[
+        {"role": "system", "content": "You are an English teacher.\n"
+                                    "context: <You need to chat with a student on the topic of the universities.\n"
+                                    "You should chat in English, on the intermediate level (B1 according to CEFR)\n"
+                                    "Do not write any salutations in your answer\n"
+                                    "If a student makes a mistake, you need to correct it and write in the chat before the next step in your dialogue\n"
+                                    "If a student says something on the other topic except the universities, say that you need to discuss universities only\n"
+                                    "If a student write something in the other language, say that you cannot understand this language and write that a student needs to write in English>\n"
+                                    f"[INST] Using this information <context> answer the question {message}\n"
+                                    f"User: {message}\n"
+                                    "Assistant:\n"
+                                    "[/INST]"}],
+    stream=False,
+    max_tokens=650,
+    presence_penalty=0.5,
+    frequency_penalty=0.5,
+    temperature=1)
+    chat_answer = output.choices[0].get('message')['content']
+    return chat_answer
