@@ -3,14 +3,15 @@ import time
 
 import telebot
 from telebot import types
-from huggingface_hub import InferenceClient
+from huggingface_hub import InferenceClient 
 from PyPDF2 import PdfReader 
 import tika 
 from tika import parser
+from llm_inference import * 
 # from pydub import AudioSegment
 # import whisper
 
-from llm_inference import llm_inference, chat_llm
+from llm_inference import chat_llm
 
 TOKEN = "7449370256:AAFmTEcRnkkLwmNbs-9ZgKyHtXNUIMzSoww"
 bot = telebot.TeleBot(TOKEN, parse_mode=None)
@@ -45,10 +46,10 @@ analysing_answer = "Analysing your answer..."
 def send_welcome(message):
     bot.reply_to(message, hello_answer)
 
-#CHATTING
-@bot.message_handler(func = lambda message: True)
-def chatting(message):
-    bot.reply_to(message, chat_llm(message))
+# #CHATTING
+# @bot.message_handler(func = lambda message: True)
+# def chatting(message):
+#     bot.reply_to(message, chat_llm(message))
 
 #PARSING TEXT FILES (.PDF .DOC .DOCX .TXT)
 @bot.message_handler(content_types=["document"])
@@ -79,11 +80,11 @@ def parsing_document(message):
         bot.reply_to(message, error_answer)
         os.remove(file_path)
 
-#PARSING TEXT MESSAGES 
-# @bot.message_handler(content_types=["text"])
-# def parsing_text(message):
-#     bot.reply_to(message, waiting_answer_text)   
-#     bot.reply_to(message, llm_inference(message))  
+# PARSING TEXT MESSAGES 
+@bot.message_handler(content_types=["text"])
+def parsing_text(message):
+    bot.reply_to(message, waiting_answer_text)   
+    bot.reply_to(message, llm_inference(message))  
 
 #PARSING VOICE MESSAGES
 # @bot.message_handler(content_types=["voice"])

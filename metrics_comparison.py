@@ -10,16 +10,16 @@ text_segmented = nltk.sent_tokenize(text)
 
 readability = Readability(text)
 metrics = {
-    "FKGL (Flesch-Kincaid Grading Level)": readability.flesch_kincaid(), 
-    "FRE (Flesch Reading Ease)": readability.flesch(),
-    "FOG (Gunning Fog Index)": readability.gunning_fog(),
-    "CLI (Colemam Liau Index)": readability.coleman_liau(),
-    "DCR (Dale Cale Readability)": readability.dale_chall(),
-    "ARI (Automated Readability Index)": readability.ari(),
-    "Linsear Write": readability.linsear_write(),
-    # "SMOG (Simple measure of Goodylegook)": Readability(" ".join(text_segmented)).smog(all_sentences=True).score,
-    "Spache": readability.spache()
+    "FKGL (Flesch-Kincaid Grading Level)": readability.flesch_kincaid().score, 
+    "FRE (Flesch Reading Ease)": readability.flesch().score,
+    "FOG (Gunning Fog Index)": readability.gunning_fog().score,
+    "CLI (Colemam Liau Index)": readability.coleman_liau().score,
+    "DCR (Dale Cale Readability)": readability.dale_chall().score,
+    "ARI (Automated Readability Index)": readability.ari().score,
+    "Linsear Write": readability.linsear_write().score,
+    "SMOG (Simple measure of Goodylegook)": Readability(" ".join(text_segmented)).smog(all_sentences=True).score,
+    "Spache": readability.spache().score
 }
 
 
-print(metrics["FRE (Flesch Reading Ease)"])
+print(metrics)
