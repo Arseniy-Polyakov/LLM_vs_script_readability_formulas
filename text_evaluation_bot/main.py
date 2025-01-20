@@ -7,11 +7,11 @@ from huggingface_hub import InferenceClient
 from PyPDF2 import PdfReader 
 import tika 
 from tika import parser
-from llm_inference import * 
-# from pydub import AudioSegment
-# import whisper
 
-from llm_inference import chat_llm
+from llm_inference import *
+from metrics_functions import script_metrics
+from pydub import AudioSegment
+import whisper
 
 TOKEN = "7449370256:AAFmTEcRnkkLwmNbs-9ZgKyHtXNUIMzSoww"
 bot = telebot.TeleBot(TOKEN, parse_mode=None)
@@ -46,11 +46,6 @@ analysing_answer = "Analysing your answer..."
 def send_welcome(message):
     bot.reply_to(message, hello_answer)
 
-# #CHATTING
-# @bot.message_handler(func = lambda message: True)
-# def chatting(message):
-#     bot.reply_to(message, chat_llm(message))
-
 #PARSING TEXT FILES (.PDF .DOC .DOCX .TXT)
 @bot.message_handler(content_types=["document"])
 def parsing_document(message):
@@ -67,12 +62,20 @@ def parsing_document(message):
             final_text = [reader.pages[i].extract_text() for i in range(len(reader.pages))]
             final_text_str = " ".join(final_text)
             bot.reply_to(message, waiting_answer_document)
+            start = time.time()
+            bot.reply_to(message, str(script_metrics(final_text_str)))
             bot.reply_to(message, llm_inference(final_text_str))
+            finish = time.time()
+            bot.reply_to(message, (" TIME LLM: " + str(finish - start) + " SEC ")) 
         elif extension == ".doc" or extension == ".docx" or extension == ".txt":
             parsed_data = parser.from_file(file_path)
             final_text = parsed_data["content"]
             bot.reply_to(message, waiting_answer_document)
+            start = time.time()
+            bot.reply_to(message, str(script_metrics(final_text)))
             bot.reply_to(message, llm_inference(final_text))
+            finish = time.time()
+            bot.reply_to(message, (" TIME LLM: " + str(finish - start) + " SEC ")) 
         else:
             bot.reply_to(message, incorrect_format)
         os.remove(file_path)
@@ -86,49 +89,49 @@ def parsing_text(message):
     bot.reply_to(message, waiting_answer_text)   
     bot.reply_to(message, llm_inference(message))  
 
-#PARSING VOICE MESSAGES
-# @bot.message_handler(content_types=["voice"])
-# def parsing_voice(message):
-#     try:
-#         voice_id = message.voice.file_id
-#         file_info = bot.get_file(voice_id)
-#         downloaded_file = bot.download_file(file_info.file_path)
-#         timestamp = str(int(time.time()))
-#         file_path = f"audio_{timestamp}_{file_info.file_path.split('/')[-1]}"
-#         with open(file_path, "wb") as file:
-#             file.write(downloaded_file)
-#         audio = AudioSegment.from_file(file_path)
-#         output_file = "output.mp3"
-#         audio.export(output_file, format="mp3", bitrate="192k")
-#         os.remove(file_path)
-#     except:
-#         bot.reply_to(message, error_answer)
-#         os.remove(file_path)
-#     bot.reply_to(message, waiting_answer_voice)
-#     model = whisper.load_model("turbo")
-#     transcription = model.transcribe(output_file)
-#     os.remove(output_file)
-#     transcription_text = transcription["text"]
-#     bot.reply_to(message, analysing_answer)
-#     bot.reply_to(message, llm_inference(transcription_text))
+# PARSING VOICE MESSAGES
+@bot.message_handler(content_types=["voice"])
+def parsing_voice(message):
+    try:
+        voice_id = message.voice.file_id
+        file_info = bot.get_file(voice_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+        timestamp = str(int(time.time()))
+        file_path = f"audio_{timestamp}_{file_info.file_path.split('/')[-1]}"
+        with open(file_path, "wb") as file:
+            file.write(downloaded_file)
+        audio = AudioSegment.from_file(file_path)
+        output_file = "output.mp3"
+        audio.export(output_file, format="mp3", bitrate="192k")
+        os.remove(file_path)
+    except:
+        bot.reply_to(message, error_answer)
+        os.remove(file_path)
+    bot.reply_to(message, waiting_answer_voice)
+    model = whisper.load_model("turbo")
+    transcription = model.transcribe(output_file)
+    os.remove(output_file)
+    transcription_text = transcription["text"]
+    bot.reply_to(message, analysing_answer)
+    bot.reply_to(message, llm_inference(transcription_text))
 
-#PARSING VIDEO MESSAGES
-# @bot.message_handler(content_types=["video"])
-# def parsing_video(message):
-#     file_id = message.video.file_id
-#     file_info = bot.get_file(file_id)
-#     downloaded_video = bot.download_file(file_info.file_path)
-#     timestamp = str(int(time.time()))
-#     file_path = f"video_{timestamp}_{file_info.file_path.split('/')[-1]}"
-#     with open(file_path, "wb") as file:
-#         file.write(downloaded_video)
-#     bot.reply_to(message, waiting_answer_video)
-#     model = whisper.load_model("turbo")
-#     transcription = model.transcribe(file_path)
-#     os.remove(file_path)
-#     transcription_text = transcription["text"]
-#     bot.reply_to(message, analysing_answer)
-#     bot.reply_to(message, llm_inference(transcription_text))
+# PARSING VIDEO MESSAGES
+@bot.message_handler(content_types=["video"])
+def parsing_video(message):
+    file_id = message.video.file_id
+    file_info = bot.get_file(file_id)
+    downloaded_video = bot.download_file(file_info.file_path)
+    timestamp = str(int(time.time()))
+    file_path = f"video_{timestamp}_{file_info.file_path.split('/')[-1]}"
+    with open(file_path, "wb") as file:
+        file.write(downloaded_video)
+    bot.reply_to(message, waiting_answer_video)
+    model = whisper.load_model("turbo")
+    transcription = model.transcribe(file_path)
+    os.remove(file_path)
+    transcription_text = transcription["text"]
+    bot.reply_to(message, analysing_answer)
+    bot.reply_to(message, llm_inference(transcription_text))
 
 # PARSING ALL OTHER TYPES OF CONTENT
 @bot.message_handler(content_types=unused_content_types)
